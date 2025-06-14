@@ -9,6 +9,13 @@ services:
       - datadog-agent
     environment:
       - DD_AGENT_HOST=datadog-agent
+      - DD_SERVICE=go-notes
+      - DD_ENV=local
+      - DD_VERSION=0.0.1
+    labels:
+      - com.datadoghq.tags.service="go-notes"
+      - com.datadoghq.tags.env="local"
+      - com.datadoghq.tags.version="0.0.1"
   users:
     container_name: users
     build: ./services/users
@@ -17,18 +24,27 @@ services:
     links:
       - datadog-agent
       - notes
+    labels:
+      - com.datadoghq.tags.service="go-users"
+      - com.datadoghq.tags.env="local"
+      - com.datadoghq.tags.version="0.0.1"
     environment:
-      - NOTES_HOST=notes
+      - NOTES_HOST=go-users
       - NOTES_PORT=8081
       - DD_AGENT_HOST=datadog-agent
+      - DD_SERVICE=go-users
+      - DD_ENV=local
+      - DD_VERSION=0.0.1
   datadog-agent:
     container_name: datadog-agent
     image: gcr.io/datadoghq/agent:latest
     pid: host
     environment:
      - DD_APM_NON_LOCAL_TRAFFIC=true
+     - DD_APM_ENABLED=true
      - DD_API_KEY=${DD_API_KEY}
      - DD_ENV=${DD_ENV}
+     - DD_SITE=${DD_SITE}
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
